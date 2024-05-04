@@ -5,5 +5,5 @@ cont = 0
 while True:
     print(f'Execucao {cont+1}')
     check_vacancies()
-    time.sleep(600)
+    time.sleep(1800)
     cont+=1

@@ -2,24 +2,29 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
 from send_email import email_alert
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
+import IPython
+
 
 def check_vacancies():
     
     to_addr = ['andre.romoli@gmail.com',
                 'biiagrachet@hotmail.com', 
                 'isaacespelho@gmail.com',
-                'pedromorande@gmail.com']
+                'pedromorande@gmail.com',
+                'ricardoutil@gmail.com',
+                'verofarma@bol.com.br']
+
+    #to_addr = ['pedromorande@gmail.com']
 
     options = Options()
-    options.add_argument = '-headless'
-    driver = webdriver.Firefox(options=options)
+    options.add_argument('--headless')
+    driver = webdriver.Chrome(options=options)
     driver.get("https://outlook.office365.com/owa/calendar/Vagasacademia@sesisenaisp.onmicrosoft.com/bookings/")
 
     time.sleep(1.5)
     driver.find_element(By.XPATH, '/html/body/div/div/form/div[4]/div[1]/button').click()
     time.sleep(1.5)
-
 
     xpaths = {'Volei': '/html/body/div/div/form/div[4]/div[1]/ul/li[1]/label/div[1]',
             'Natacao Adulto': '/html/body/div/div/form/div[4]/div[1]/ul/li[2]/label/div[1]',
@@ -37,10 +42,18 @@ def check_vacancies():
         driver.find_element(By.XPATH, xpaths[xpath]).click()
         time.sleep(1.5)
         try:
-            driver.find_element(By.XPATH, '/html/body/div/div/form/div[5]/div[2]/div/div[2]/ul')
-            msg += f'\n ************** \n {xpath} - VAGA ENCONTRADA!'
+            horarios = driver.find_element(By.XPATH, '/html/body/div/div/form/div[5]/div[2]/div/div[2]/ul').text
+            msg += f'\n ************** \n {xpath} - VAGA ENCONTRADA!\n'
+            cont_hor = 0
+            for horario in horarios.split('\n'):
+                if cont_hor == 0:
+                    msg +=  f'{horario}'
+                else:
+                    msg +=  f' - {horario}'
+                cont_hor += 1    
         except:
             pass
+
     driver.quit()
 
     if msg.split('Vagas disponiveis Sesi Araras: \n')[1] != '':
